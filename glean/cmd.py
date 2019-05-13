@@ -161,6 +161,8 @@ def _set_rh_bonding(name, interface, distro, results):
         # RedHat does not add any specific configuration to the master
         # interface. All configuration is done in the slave ifcfg files.
         if 'bond_slaves' in interface:
+            results += "BONDING_MASTER=yes\n"
+            results.replace("=Ethernet", "=Bond")
             return results
 
         results += "SLAVE=yes\n"
