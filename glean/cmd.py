@@ -162,7 +162,9 @@ def _set_rh_bonding(name, interface, distro, results):
         # interface. All configuration is done in the slave ifcfg files.
         if 'bond_slaves' in interface:
             results += "BONDING_MASTER=yes\n"
-            results.replace("=Ethernet", "=Bond")
+            results += "BONDING_OPTS=\"downdelay=0 miimon={bond_miimon} mode={bond_mode} updelay=0\"\n".format(
+                bond_miimon=interface['bond_miimon'], bond_mode=interface['bond_mode'])
+            results = results.replace("=Ethernet", "=Bond")
             return results
 
         results += "SLAVE=yes\n"
@@ -292,7 +294,7 @@ def write_redhat_interfaces(interfaces, sys_interfaces, args):
         else:
             interface_name = sys_interfaces[interface['mac_address']]
 
-        if 'bond_links' in interface:
+        if 'bond_links' in interface and _is_suse(args.distro):
             # We need to keep track of the slave interfaces because
             # SUSE configures the slaves on the master ifcfg file
             bond_slaves = []
